@@ -1,0 +1,30 @@
+{
+    "design_path": "pipeline_tinker_output_template_force",
+    "binder_name": "peptide",
+    "starting_pdb": "./input/4tuj_renum_scfv.pdb",
+    "chains": "A",
+    "binder_chain": "B",
+    "_comment_chains": "Chain of the target; has to be chain A! (so far no working implementation for multi-chain targets)",
+    "target_hotspot_residues": "226,229,178",
+
+    "fixed_positions": "",
+    "_comment_fixed_positions": "Comma-separated positions (1-based) to lock sequence AND structure (e.g., '1-3,10'). Use for catalytic sites or critical residues. Independent of floating setting.",
+    "template_positions": "",
+    "_comment_template_positions": "Comma-separated positions (1-based) to lock structure but redesign sequence (e.g., '15-20'). Use to preserve secondary structure geometry. Independent of floating setting.",
+    "sequence_positions": "",
+    "_comment_sequence_positions": "Comma-separated positions (1-based) to lock sequence but allow movement (e.g., '5-8'). Use for binding motifs that need spatial optimization. Independent of floating setting.",
+    "_comment_position_hierarchy": "Position priority: fixed_positions (seq+struct) > template_positions (struct only) > sequence_positions (seq only) > redesign (full freedom). Each position belongs to exactly one category. Disulfide pairs are automatically added to fixed_positions (if floating=false) or sequence_positions (if floating=true).",
+    
+    "disulfide_pairs": [[0,-1]],
+    "_comment_disulfide_pairs": "0-based numbering! Placed Cysteins orverride potential scaffold fix! List of cysteine residue index pairs to form disulfide bonds (0-based, binder only). Example: [[0, 9], [3, -1]] creates bonds between positions 0-9 and 3-last. Empty list = auto-generate pairs. Use -1 for second position to automatically select the last residue of the binder.",
+    "disulfide_num": 1 ,
+    "_comment_disulfide_num": "Number of disulfide bonds to promote during design",
+
+    "lengths": [9,15],
+    "number_of_final_designs": 100 ,
+    "max_trajectories": 1000,
+    "use_template": true,
+    "boltz_conda_env": "boltz",
+    "force": true,
+    "threshold": 4.0
+}

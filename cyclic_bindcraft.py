@@ -5,6 +5,7 @@ The Repredicted Structures are relaxed and scored using PyRosetta and finally fi
 The design loop continues until the specified number of accepted designs or maximum number of trajectories is reached.
 """
 import os
+import shutil
 import sys
 import argparse
 import time
@@ -767,8 +768,17 @@ def main():
                             target_seq, binder_seq = content.split('/')
                             
                             yaml_name = fasta_path.stem + ".yaml"
-                            create_boltz_yaml(boltz_out_dir / yaml_name, target_seq, binder_seq, auto_disulfide, False, target_settings.get("use_template", False), design_struct,boltz_templates_dir)
-
+                            create_boltz_yaml(boltz_out_dir / yaml_name, 
+                                                            target_seq, 
+                                                            binder_seq, 
+                                                            auto_disulfide, 
+                                                            False, 
+                                                            target_settings.get("use_template", False), 
+                                                            design_struct, 
+                                                            boltz_templates_dir,
+                                                            target_settings.get("force", False),
+                                                            target_settings.get("threshold", 4.0)
+                                            )                        
         # 3. Fallback to PDB if no FASTAs were matched for this specific design
         if not fasta_found_for_design:
             design_struct = design_path / "Trajectory" / f"{design_name}.pdb"
@@ -779,8 +789,17 @@ def main():
                 
                 yaml_name = f"{design_name}.yaml"
 
-                create_boltz_yaml(boltz_out_dir / yaml_name, target_seq, binder_seq, auto_disulfide, False, target_settings.get("use_template", False), design_struct, boltz_templates_dir)
-
+                create_boltz_yaml(boltz_out_dir / yaml_name, 
+                                  target_seq, 
+                                  binder_seq, 
+                                  auto_disulfide, 
+                                  False, 
+                                  target_settings.get("use_template", False), 
+                                  design_struct, 
+                                  boltz_templates_dir,
+                                  target_settings.get("force", False),
+                                  target_settings.get("threshold", 4.0)
+                )
         # Run Boltz reprediction for this design and all mpnn sequences in one batch
         conda_env = target_settings.get("boltz_conda_env", "boltz")
         print(f'Running Boltz repredictions for design: {design_name}')
@@ -796,6 +815,13 @@ def main():
             design_path / "Repredicted",
             extract_chain_sequence_from_pdb
         )
+        
+        #Cleanup Boltz templates to save space (optional)
+        clean_up = True
+        dir_to_remove = design_path / "boltz_reprediction" 
+        if clean_up :
+            shutil.rmtree(dir_to_remove)
+
 
         #Boltz Reprediction finished --> PyRosetta Relaxation and Scoring of Boltz outputs
 
